@@ -8,6 +8,8 @@
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
+    "strictPropertyInitialization":false,
+    "noImplicitAny": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
@@ -18,10 +20,18 @@
     "importHelpers": true,
     "target": "es2017",
     "module": "es2020",
+    "types": ["jasmine","webgl2","offscreencanvas"],
     "lib": [
       "es2020",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@app/*": ["src/app/*"],
+      "@environments/*": ["src/environments/*"],
+      "@services/*": ["@app/services/*"],
+      "@shared/*": ["@app/shared/*"],
+      "@api/*": ["@app/api/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
