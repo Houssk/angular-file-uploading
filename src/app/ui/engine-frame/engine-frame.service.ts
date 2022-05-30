@@ -103,15 +103,69 @@ export class EngineFrameService implements OnDestroy {
     }
   }
 
-  public loadImage(fileName) {
+  public loadImage(fileName, size, ratio) {
     const pathLink = `./assets/files/${fileName}`
     const texture = new THREE.TextureLoader().load(pathLink);
 
+    
+
     const box = new THREE.Mesh(
-      new THREE.BoxGeometry(200, 300, 1),
+      new THREE.BoxGeometry(size['width']*ratio, size['height']*ratio, 1),
       new THREE.MeshBasicMaterial({
         map: texture
       }));
     this.scene.add(box);
+  }
+
+
+
+  public displayCircle(points, size, ratio){
+    
+    const pathLink = `./assets/files/red.jpg`
+    const texture = new THREE.TextureLoader().load(pathLink);
+
+    let vector = new THREE.Vector3(0, 0, 1); //axis to point (face to camera)
+
+    let new_radius = points['radius']*ratio
+  
+    const circle = new THREE.Mesh( 
+      new THREE.CylinderGeometry( new_radius, new_radius, 5, 32, 5, true), 
+      new THREE.MeshBasicMaterial({
+        map : texture
+      }));
+
+    let middle_x = size['width']/2
+    let middle_y = size['height']/2
+
+    let new_x = points['x']*ratio - middle_x*ratio
+    let new_y = - points['y']*ratio + middle_y*ratio
+
+    let axis = new THREE.Vector3(0, 1, 0); //original axis
+    circle.quaternion.setFromUnitVectors(axis, vector.clone().normalize());
+
+    circle.position.set(new_x, new_y, 0)
+
+    this.scene.add( circle );
+  }
+
+
+
+  public displayDetection(landmark, size, ratio){
+
+    const point = new THREE.Points(
+      new THREE.SphereGeometry( 2, 5, 5 ),
+      //new THREE.MeshBasicMaterial({ color: 0xffffff })
+      );
+    
+    let middle_x = size['width']/2
+    let middle_y = size['height']/2
+
+    let new_x = landmark['x']*ratio - middle_x*ratio
+    let new_y = - landmark['y']*ratio + middle_y*ratio
+    
+    point.position.set(new_x, new_y, 0)
+    
+    this.scene.add(point)
+
   }
 }

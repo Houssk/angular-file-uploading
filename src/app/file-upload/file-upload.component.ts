@@ -35,13 +35,45 @@ export class FileUploadComponent implements OnInit {
   onUpload() {
     this.loading = !this.loading;
     console.log(this.file);
-    this.fileUploadService.upload(this.file, this.path).subscribe(
+    this.fileUploadService.upload(this.file, 'upload').subscribe( //this.path
       (event: any) => {
         this.shortLink = `http://localhost:3000/${event.filename}`;
         console.log('event', event[1]);
-        this.response = event;
+
+        const size = event[0]['original_size']
+        let ratio = 200/size['width']; //set the displayed image width to 200mm
+
+        this.response = event[0]['detection'];
         this.loading = false; // Flag variable
-        this.engineFrameService.loadImage(event[1]);
+        this.engineFrameService.loadImage(event[1], size, ratio);
+        this.engineFrameService.displayCircle(event[0]['detection'], size, ratio);
+
+      }
+    );
+  }
+
+  //OnClik of button Automatic detectoon
+  onDetection(){
+    this.loading = !this.loading;
+    console.log(this.file);
+    this.fileUploadService.upload(this.file, 'detection').subscribe( //this.path
+      (event: any) => {
+        this.shortLink = `http://localhost:3000/${event.filename}`;
+        console.log('event', event[1]);
+
+        const size = event[0]['original_size']
+        let ratio = 200/size['width']; //set the displayed image width to 200mm
+
+        this.response = event[0]['detection'];
+        this.loading = false; // Flag variable
+  
+        this.engineFrameService.displayDetection(event[0]['detection']['big_troch'],size, ratio); //big_troch
+        this.engineFrameService.displayDetection(event[0]['detection']['little_troch'],size, ratio); 
+        this.engineFrameService.displayDetection(event[0]['detection']['bot_ax'],size, ratio); 
+        this.engineFrameService.displayDetection(event[0]['detection']['top_ax'],size, ratio); 
+        this.engineFrameService.displayDetection(event[0]['detection']['center'],size, ratio); 
+        this.engineFrameService.displayDetection(event[0]['detection']['corner'],size, ratio); 
+
       }
     );
   }

@@ -27,4 +27,11 @@ export class FileUploadService {
     // with formData as req
     return this.http.post(`${this.baseApiUrl}/${path}`, formData)
   }
+
+// Returns the detection
+  detection(filename: string, path: string){
+
+    // Make http post request over api
+    return this.http.post(`${this.baseApiUrl}/${path}`, 'received');
+  }
 }
