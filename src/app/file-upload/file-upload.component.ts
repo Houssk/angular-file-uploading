@@ -40,10 +40,13 @@ export class FileUploadComponent implements OnInit {
     this.fileUploadService.upload(this.file, 'upload').subscribe( //this.path
       (event: any) => {
         this.shortLink = `${environment.serverLink}${event.filename}`;
+
+        console.log(environment.serverLink);
         console.log('event', event[1]);
 
         const size = event[0]['original_size']
         let ratio = 200 / size['width']; //set the displayed image width to 200mm
+
 
         this.response = event[0]['detection'];
         this.loading = false; // Flag variable
