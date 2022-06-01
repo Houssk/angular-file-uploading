@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  serverLink : 'http://nest.3d4you.org/'
 };
