@@ -1,23 +1,44 @@
 <div class="container">
+  <!-- Part to upload an image -->
   <div class="row">
-    <div class="col">
-    </div>
     <div class="col input-group">
       <input class="form-control" type="file" (change)="onChange($event)">
       <button (click)="onUpload()"
-              class="btn btn-success">
+             class="btn btn-success">
         Upload
       </button>
     </div>
-    <div class="col">
-      <button (click)="onDetection()"
-              class="btn btn-success">
-        Automatic Detections
-      </button>
-    </div>
   </div>
+  <!-- Form to fill to launch the lanfmarks detection -->
+  <form [formGroup]="form">
+    <div class="row">
+      <label>
+        Nombre de hanches :
+        <div class="col">
+          <input name="number" ng-control="options" type="radio" formControlName="nbrHip" [value]="1"  /> 1
+          <input name="number" ng-control="options" type="radio" formControlName="nbrHip" [value]="2"  /> 2
+        </div>
+      </label>
+    </div>
+    <div class="row">
+      <label>
+        Côté opéré :
+        <div class="col">
+          <input name="side" ng-control="options" type="radio" formControlName="side" [value]="1" /> Gauche 
+          <input name="side" ng-control="options" type="radio" formControlName="side" [value]="2" /> Droit
+        </div>
+      </label>
+      <div class="col">
+        <button (click)="onDetection()"
+                class="btn btn-success">
+            Automatic Detection
+        </button>
+      </div>
+    </div>
+  </form>
 </div>
-<!-- Shareable short link of uoloaded file -->
+
+<!-- Infos about returned by the backend -->
 <div class="container text-center jumbotron"
      *ngIf="shortLink">
   <h6>{{ response | json }}</h6>

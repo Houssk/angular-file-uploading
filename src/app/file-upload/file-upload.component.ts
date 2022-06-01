@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FileUploadService} from './file-upload.service';
+import { FormGroup, FormBuilder, FormArray, FormControl } from '@angular/forms';
 // @ts-ignore
 import {EngineFrameService} from "@app/ui/engine-frame/engine-frame.service";
 
@@ -20,6 +21,10 @@ export class FileUploadComponent implements OnInit {
   response = null;
   // @ts-ignore
   file: File = null; // Variable to store file
+  form = new FormGroup({
+    nbrHip: new FormControl(''),
+    side: new FormControl('')
+  }); //checkbox form
 
   // Inject service
   constructor(private fileUploadService: FileUploadService, private engineFrameService: EngineFrameService) {
@@ -80,6 +85,6 @@ export class FileUploadComponent implements OnInit {
         this.engineFrameService.displayDetection(event[0]['detection']['corner'], size, ratio);
 
       }
-    );
+    ); 
   }
 }
