@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 // @ts-ignore
 import {Observable} from 'rxjs';
+import {environment} from "@environments/environment";
 import { FormGroup } from '@angular/forms';
 
 @Injectable({
@@ -10,7 +11,7 @@ import { FormGroup } from '@angular/forms';
 export class FileUploadService {
 
 // API url
-  baseApiUrl = "http://localhost:3000"
+  baseApiUrl = environment.serverLink;
 
   constructor(private http: HttpClient) {
   }
@@ -28,10 +29,7 @@ export class FileUploadService {
     // with formData as req
     return this.http.post(`${this.baseApiUrl}/${path}`, formData)
   }
-
-// Returns the detection
   detection(form: FormGroup, path: string){
-
     // Make http post request over api
     return this.http.post(`${this.baseApiUrl}/${path}`, 'test');
     
