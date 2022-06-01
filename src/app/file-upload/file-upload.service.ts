@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 // @ts-ignore
 import {Observable} from 'rxjs';
+import {environment} from "@environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import {Observable} from 'rxjs';
 export class FileUploadService {
 
 // API url
-  baseApiUrl = "http://localhost:3000"
+  baseApiUrl = environment.serverLink;
 
   constructor(private http: HttpClient) {
   }
@@ -29,7 +30,7 @@ export class FileUploadService {
   }
 
 // Returns the detection
-  detection(filename: string, path: string){
+  detection(filename: string, path: string) {
 
     // Make http post request over api
     return this.http.post(`${this.baseApiUrl}/${path}`, 'received');

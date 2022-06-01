@@ -39,7 +39,7 @@ export class FileUploadComponent implements OnInit {
     console.log(this.file);
     this.fileUploadService.upload(this.file, 'upload').subscribe( //this.path
       (event: any) => {
-        this.shortLink = `${environment.serverLink}${event.filename}`;
+        this.shortLink = `${environment.serverLink}/${event.filename}`;
 
         console.log(environment.serverLink);
         console.log('event', event[1]);
@@ -63,7 +63,7 @@ export class FileUploadComponent implements OnInit {
     console.log(this.file);
     this.fileUploadService.upload(this.file, 'detection').subscribe( //this.path
       (event: any) => {
-        this.shortLink = `${environment.serverLink}${event.filename}`;
+        this.shortLink = `${environment.serverLink}/${event.filename}`;
         console.log('event', event[1]);
 
         const size = event[0]['original_size']
