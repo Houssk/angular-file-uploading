@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --prod",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -18,8 +19,11 @@
     "@angular/platform-browser": "~13.1.0",
     "@angular/platform-browser-dynamic": "~13.1.0",
     "@angular/router": "~13.1.0",
+    "@types/three": "^0.140.0",
     "bootstrap": "^5.1.3",
+    "camera-controls": "^1.34.4",
     "rxjs": "~7.4.0",
+    "three": "^0.140.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
@@ -35,6 +39,7 @@
     "karma-coverage": "~2.1.0",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
+    "threejs-position-util": "github:MasatoMakino/threejs-position-util",
     "typescript": "~4.5.2"
   }
 }
