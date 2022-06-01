@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 // @ts-ignore
 import {Observable} from 'rxjs';
+import { FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class FileUploadService {
     // Create form data
     const formData = new FormData();
 
-    // Store form name as "file" with file data
+    // Store form name as "image" with file data
     formData.append("image", file, file.name);
 
     // Make http post request over api
@@ -29,9 +30,10 @@ export class FileUploadService {
   }
 
 // Returns the detection
-  detection(filename: string, path: string){
+  detection(form: FormGroup, path: string){
 
     // Make http post request over api
-    return this.http.post(`${this.baseApiUrl}/${path}`, 'received');
+    return this.http.post(`${this.baseApiUrl}/${path}`, 'test');
+    
   }
 }
