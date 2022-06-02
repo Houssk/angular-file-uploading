@@ -69,8 +69,8 @@ export class FileUploadComponent implements OnInit {
   //OnClik of button Automatic detectoon
   onDetection(){
     this.loading = !this.loading;
-    console.log(this.file);
-    this.fileUploadService.upload(this.file, 'detection').subscribe( //this.path
+    console.log(this.file[0]);
+    this.fileUploadService.detection(this.form, 'detection').subscribe( //this.path
       (event: any) => {
         
         this.shortLink = `http://localhost:3000/${event.filename}`;
@@ -79,7 +79,7 @@ export class FileUploadComponent implements OnInit {
         const size = event[0]['original_size']
         let ratio = 200/size['width']; //set the displayed image width to 200mm
 
-        this.response = event[0]['detection'];
+        this.response = event[0];
         this.loading = false; // Flag variable
   
         this.engineFrameService.displayDetection(event[0]['detection']['big_troch'],size, ratio); //big_troch
