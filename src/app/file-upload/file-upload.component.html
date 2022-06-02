@@ -2,10 +2,11 @@
   <!-- Part to upload an image -->
   <div class="row">
     <div class="col input-group">
-      <input class="form-control" type="file" (change)="onChange($event)">
-      <button (click)="onUpload()"
-             class="btn btn-success">
-        Upload
+      <input class="form-control" type="file" (change)="onChange($event)" required>
+      <button [disabled]=!this.file 
+              (click)="onUpload()" 
+              class="btn btn-success" >
+              Upload
       </button>
     </div>
   </div>
@@ -30,7 +31,7 @@
         </div>
       </label>
       <div class="col">
-        <button (click)="onDetection()"
+        <button [disabled]="verif() || !this.file" (click)="onDetection()"
                 class="btn btn-success">
             Automatic Detection
         </button>

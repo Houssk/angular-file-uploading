@@ -16,7 +16,7 @@ export class FileUploadComponent implements OnInit {
   // Variable to store shortLink from api response
   shortLink: string = "";
   loading: boolean = false; // Flag variable
-  response = null;
+  response:any //= null;
   // @ts-ignore
   file: File = null; // Variable to store file
   form = new FormGroup({
@@ -29,6 +29,15 @@ export class FileUploadComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  verif(){
+    if(this.form.value['nbrHip']=='' || this.form.value['side']=='') {
+      return true
+    }
+    else {
+      return false
+    }
   }
 
   // On file Select
@@ -63,6 +72,7 @@ export class FileUploadComponent implements OnInit {
     console.log(this.file);
     this.fileUploadService.upload(this.file, 'detection').subscribe( //this.path
       (event: any) => {
+        
         this.shortLink = `http://localhost:3000/${event.filename}`;
         console.log('event', event[1]);
 
@@ -78,7 +88,7 @@ export class FileUploadComponent implements OnInit {
         this.engineFrameService.displayDetection(event[0]['detection']['top_ax'],size, ratio); 
         this.engineFrameService.displayDetection(event[0]['detection']['center'],size, ratio); 
         this.engineFrameService.displayDetection(event[0]['detection']['corner'],size, ratio); 
-
+        
       }
     ); 
   }

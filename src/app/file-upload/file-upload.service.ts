@@ -33,7 +33,8 @@ export class FileUploadService {
   detection(form: FormGroup, path: string){
 
     // Make http post request over api
-    return this.http.post(`${this.baseApiUrl}/${path}`, 'test');
+    
+    return this.http.post(`${this.baseApiUrl}/${path}`, form);
     
   }
 }
