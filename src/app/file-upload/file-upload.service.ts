@@ -32,7 +32,7 @@ export class FileUploadService {
 // Returns the detection
   detection(form: FormGroup, path: string){
 
-    let sideTrad = [ 'left', 'right']
+    let sideTrad = ['undefined', 'left', 'right']
 
     let infos = JSON.stringify([
           {
