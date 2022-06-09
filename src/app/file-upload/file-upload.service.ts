@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 // @ts-ignore
 import {Observable} from 'rxjs';
 import {environment} from "@environments/environment";
@@ -30,8 +30,23 @@ export class FileUploadService {
     return this.http.post(`${this.baseApiUrl}/${path}`, formData)
   }
   detection(form: FormGroup, path: string){
+
+    let sideTrad = ['undefined', 'left', 'right']
+
+    let infos = JSON.stringify([
+          {
+              "nbrHip": form.value['nbrHip'],
+              "side": sideTrad[form.value['side']]
+          },
+      ]);
+
+    const data2send = JSON.parse(infos)
+
     // Make http post request over api
-    return this.http.post(`${this.baseApiUrl}/${path}`, 'test');
+    const headers = new HttpHeaders();
+    headers.set("Accept", "application/json").set('Content-Type', 'application/json')
+
+    return this.http.post(`${this.baseApiUrl}/${path}`, data2send, { headers });
     
   }
 }

@@ -32,19 +32,19 @@ export class Utils {
   }
 
   /**
-   *
-   * @param mesh
-   * @param point
-   * @param axis
-   * @param angle
-   */
+  *
+  * @param mesh
+  * @param point vecteur
+  * @param axis vecteur (0,1,0)
+  * @param angle radian 
+  */
   static rotateAroundWorldAxis(mesh, point, axis, angle) {
     const q = new Quaternion();
     q.setFromAxisAngle(axis, angle);
     mesh.applyQuaternion(q);
-    mesh.position.sub(PositionUtil.getGeometryCenterInWorld(point));
+    mesh.position.sub(point);
     mesh.position.applyQuaternion(q);
-    mesh.position.add(PositionUtil.getGeometryCenterInWorld(point));
+    mesh.position.add(point);
     return mesh;
   }
 
