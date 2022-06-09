@@ -4,6 +4,8 @@ import { FormGroup, FormBuilder, FormArray, FormControl } from '@angular/forms';
 // @ts-ignore
 import {EngineFrameService} from "@app/ui/engine-frame/engine-frame.service";
 
+import {environment} from "@environments/environment";
+
 @Component({
   selector: 'app-file-upload',
   templateUrl: './file-upload.component.html',
@@ -53,11 +55,15 @@ export class FileUploadComponent implements OnInit {
     console.log(this.file);
     this.fileUploadService.upload(this.file, 'upload').subscribe( //this.path
       (event: any) => {
-        this.shortLink = `http://localhost:3000/${event.filename}`;
+        this.shortLink = `${environment.serverLink}/${event.filename}`;
+
+        console.log(environment.serverLink);
         console.log('event', event[1]);
 
         const size = event[0]['original_size']
+
         this.ratio = 200/size['width']; //set the displayed image width to 200mm
+
 
         this.response = event[0]['detection'];
         this.loading = false; // Flag variable
@@ -71,12 +77,12 @@ export class FileUploadComponent implements OnInit {
   }
 
   //OnClik of button Automatic detectoon
-  onDetection(){
+  onDetection() {
     this.loading = !this.loading;
     console.log(this.file[0]);
     this.fileUploadService.detection(this.form, 'detection').subscribe( //this.path
       (event: any) => {
-        
+
         this.shortLink = `http://localhost:3000/${event.filename}`;
         console.log('event', event[1]);
 
@@ -93,6 +99,7 @@ export class FileUploadComponent implements OnInit {
         
         this.engineFrameService.onLandmarksDisplayCup(event[0]['detection']['center'], size, this.ratio, this.scale, event[0]['side'])
         this.engineFrameService.onLandmarksDisplayRod(event[0]['detection']['top_ax'], event[0]['detection']['bot_ax'], event[0]['detection']['center'], size, this.ratio, this.scale, event[0]['side'])
+
       }
     ); 
   }
