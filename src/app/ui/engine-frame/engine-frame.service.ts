@@ -6,6 +6,8 @@ import {RendererService} from '@app/services/three/renderer.service';
 import {LightService} from '@app/services/three/light.service';
 import {SceneService} from '@app/services/three/scene.service';
 import {AxesHelper} from "three";
+import { Xliff2 } from '@angular/compiler';
+import { Utils } from '@app/shared/class/Utils';
 
 
 declare global {
@@ -107,8 +109,6 @@ export class EngineFrameService implements OnDestroy {
     const pathLink = `./assets/files/${fileName}`
     const texture = new THREE.TextureLoader().load(pathLink);
 
-    
-
     const box = new THREE.Mesh(
       new THREE.BoxGeometry(size['width']*ratio, size['height']*ratio, 1),
       new THREE.MeshBasicMaterial({
@@ -159,4 +159,134 @@ export class EngineFrameService implements OnDestroy {
     this.scene.add(point)
 
   }
+
+  
+  public onLandmarksDisplayCup(landmark, size, ratio, scale, side: string){
+    let pathLink: string
+    pathLink='undefined'
+
+    // wPix=1136	hPix=915	wCm=9.62	hCm=7.75
+    if (side=='right'){
+      pathLink = `./assets/images/Cup49_R.png`
+    }
+    else if (side=='left'){
+      pathLink = `./assets/images/Cup49.png`
+    }
+    
+    const texture = new THREE.TextureLoader().load(pathLink)
+
+    let new_w = 96.2/scale
+    let new_h = 77.5/scale
+
+    const cup = new THREE.Mesh(
+      new THREE.BoxGeometry(new_w, new_h, 1),
+      new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true
+      }));
+
+    let middle_x = size['width']/2
+    let middle_y = size['height']/2
+  
+    let new_x = landmark['x']*ratio - middle_x*ratio
+    let new_y = - landmark['y']*ratio + middle_y*ratio
+      
+    cup.position.set(new_x, new_y, 0)
+
+    this.scene.add(cup);
+  }
+
+
+  public onLandmarksDisplayRod(topAx, botAx, center, size, ratio, scale, side: string){
+    let pathLink: string
+    pathLink='undefined'
+    let pos_x = 0
+    let pos_y = 0
+    let rot = 0
+    let axDiaX = 0
+
+    // wPix=215	wCm=5.46	hPix=800	hCm=20.32 rapportmm/px=O.254
+    if (side=='right'){
+      pathLink = `./assets/images/hype_scs_T3_R.png` //ptmecahaut x=81.5 y=371 //axDiaph x=-80
+      pos_x = 81.5 //can be commented
+      pos_y = 371
+      axDiaX = -80
+    }
+    else if (side=='left'){
+      pathLink = `./assets/images/hype_scs_T3.png` //ptmecahaut x=-79.5 y=371 //axDiaph x=78
+      pos_x = -79.5
+      pos_y = 371
+      axDiaX = 78
+    }
+
+    const texture = new THREE.TextureLoader().load(pathLink)
+
+    let new_w = 54.6/scale
+    let new_h = 203.2/scale
+
+    const rod = new THREE.Mesh(
+      new THREE.BoxGeometry(new_w, new_h, 1),
+      new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true
+      }));
+
+    //define the middle of the image wich will be the point O of the application world
+    let middle_x = size['width']/2
+    let middle_y = size['height']/2
+
+    //Find the directing coef to find the angle between the detected axe and the vertical line
+    const x1 = topAx['x']
+    const y1 = topAx['y']
+    const x2 = botAx['x']
+    const y2 = botAx['y']
+    let a = 0
+    if ((x1-x2) != 0) {
+      a = (y2-y1)/(x2-x1) }
+    else {
+      a = (y2-y1/0.001) }
+
+    //Find the final angle 
+    if (topAx['x']>botAx['x']){
+      rot= Math.PI/2
+    }
+    else {
+      rot= - Math.PI/2
+    }
+    const angle = Math.atan(a) + rot
+
+    //define the position of the topAx point in the application world
+    let topAx_x = topAx['x']*ratio - middle_x*ratio
+    let topAx_y = - topAx['y']*ratio + middle_y*ratio
+
+    //define the position to the center of the rod layer before the rotation 
+    let x_before_rotate = topAx_x - (axDiaX*0.254/scale)
+    let y_before_rotate = topAx_y - (pos_y*0.254/scale)
+
+    //define the point and the axis around which the image will rotate
+    const point_rot = new THREE.Vector3( topAx_x, topAx_y, 0 );
+    const axis_rot = new THREE.Vector3(0, 0, 1)
+
+    // TO DELETE
+    const point = new THREE.Mesh(
+      new THREE.SphereGeometry( 1, 5, 5 ),
+      new THREE.MeshBasicMaterial({ color: 0x0000ff })
+      );
+    point.position.set(x_before_rotate, y_before_rotate, 0)
+    this.scene.add(point);
+    //
+
+    //apply rotation
+    Utils.rotateAroundWorldAxis(rod, point_rot, axis_rot, -angle)
+
+    //reset position according to the rotation
+    let dist = (center['y']-topAx['y'])*ratio
+    let x_after_rotate = x_before_rotate + Math.tan(angle)*dist
+    let y_after_rotate = y_before_rotate - dist
+    rod.position.set(x_after_rotate, y_after_rotate, 0)
+
+    this.scene.add(rod);
+  }
+
+
 }

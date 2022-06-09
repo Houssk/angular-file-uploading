@@ -16,7 +16,9 @@ export class FileUploadComponent implements OnInit {
   // Variable to store shortLink from api response
   shortLink: string = "";
   loading: boolean = false; // Flag variable
-  response:any //= null;
+  response: any //= null;
+  ratio: number //ratio between pixels and size displayed : mm/pix
+  scale: number //scale : real mm/image mm
   // @ts-ignore
   file: File = null; // Variable to store file
   form = new FormGroup({
@@ -55,13 +57,15 @@ export class FileUploadComponent implements OnInit {
         console.log('event', event[1]);
 
         const size = event[0]['original_size']
-        let ratio = 200/size['width']; //set the displayed image width to 200mm
+        this.ratio = 200/size['width']; //set the displayed image width to 200mm
 
         this.response = event[0]['detection'];
         this.loading = false; // Flag variable
-        this.engineFrameService.loadImage(event[1], size, ratio);
-        this.engineFrameService.displayCircle(event[0]['detection'], size, ratio);
+        this.engineFrameService.loadImage(event[1], size, this.ratio);
+        this.engineFrameService.displayCircle(event[0]['detection'], size, this.ratio);
 
+        let circleRadius = 12 //12mm
+        this.scale = circleRadius/(event[0]['detection']['radius']*this.ratio)
       }
     );
   }
@@ -77,18 +81,18 @@ export class FileUploadComponent implements OnInit {
         console.log('event', event[1]);
 
         const size = event[0]['original_size']
-        let ratio = 200/size['width']; //set the displayed image width to 200mm
-
         this.response = event[0];
         this.loading = false; // Flag variable
   
-        this.engineFrameService.displayDetection(event[0]['detection']['big_troch'],size, ratio); //big_troch
-        this.engineFrameService.displayDetection(event[0]['detection']['little_troch'],size, ratio); 
-        this.engineFrameService.displayDetection(event[0]['detection']['bot_ax'],size, ratio); 
-        this.engineFrameService.displayDetection(event[0]['detection']['top_ax'],size, ratio); 
-        this.engineFrameService.displayDetection(event[0]['detection']['center'],size, ratio); 
-        this.engineFrameService.displayDetection(event[0]['detection']['corner'],size, ratio); 
+        this.engineFrameService.displayDetection(event[0]['detection']['big_troch'], size, this.ratio); //big_troch
+        this.engineFrameService.displayDetection(event[0]['detection']['little_troch'], size, this.ratio); 
+        this.engineFrameService.displayDetection(event[0]['detection']['bot_ax'], size, this.ratio); 
+        this.engineFrameService.displayDetection(event[0]['detection']['top_ax'], size, this.ratio); 
+        this.engineFrameService.displayDetection(event[0]['detection']['center'], size, this.ratio); 
+        this.engineFrameService.displayDetection(event[0]['detection']['corner'], size, this.ratio); 
         
+        this.engineFrameService.onLandmarksDisplayCup(event[0]['detection']['center'], size, this.ratio, this.scale, event[0]['side'])
+        this.engineFrameService.onLandmarksDisplayRod(event[0]['detection']['top_ax'], event[0]['detection']['bot_ax'], event[0]['detection']['center'], size, this.ratio, this.scale, event[0]['side'])
       }
     ); 
   }
