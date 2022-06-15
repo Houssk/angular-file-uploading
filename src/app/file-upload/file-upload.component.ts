@@ -73,7 +73,7 @@ export class FileUploadComponent implements OnInit {
   //OnClik of button Automatic detectoon
   onDetection(){
     this.loading = !this.loading;
-    console.log(this.file[0]);
+
     this.fileUploadService.detection(this.form, 'detection').subscribe( //this.path
       (event: any) => {
         
@@ -91,9 +91,13 @@ export class FileUploadComponent implements OnInit {
         this.engineFrameService.displayDetection(event[0]['detection']['center'], size, this.ratio); 
         this.engineFrameService.displayDetection(event[0]['detection']['corner'], size, this.ratio); 
         
-        this.engineFrameService.onLandmarksDisplayCup(event[0]['detection']['center'], size, this.ratio, this.scale, event[0]['side'])
-        this.engineFrameService.onLandmarksDisplayRod(event[0]['detection']['top_ax'], event[0]['detection']['bot_ax'], event[0]['detection']['center'], size, this.ratio, this.scale, event[0]['side'])
+        this.engineFrameService.onLandmarksDisplayCup(event[0]['detection']['center'], event[0]['detection']['corner'], size, this.ratio, this.scale, event[0]['side'])
+        this.engineFrameService.onLandmarksDisplayRod(event[0]['detection']['top_ax'], event[0]['detection']['bot_ax'], event[0]['detection']['center'], event[0]['detection']['big_troch'], size, this.ratio, this.scale, event[0]['side'])
       }
     ); 
   }
+
+
+
 }
+

@@ -50,4 +50,27 @@ export class FileUploadService {
     return this.http.post(`${this.baseApiUrl}/${path}`, data2send, { headers });
     
   }
+
+  size(deltaCut: number, xDiaph: number, yDiaph: number, xTroch: number, yTroch: number,angle: number, path : string){
+
+    let infos = JSON.stringify([
+        {
+          "deltaCut": deltaCut,
+          "xDiaph": xDiaph,
+          "yDiaph": yDiaph,
+          "xTroch": xTroch,
+          "yTroch": yTroch,
+          "angle": angle
+        },
+      ]);
+
+    const data2send = JSON.parse(infos)
+
+    // Make http post request over api
+    const headers = new HttpHeaders();
+    headers.set("Accept", "application/json").set('Content-Type', 'application/json')
+
+    return this.http.post(`${this.baseApiUrl}/${path}`, data2send, { headers });
+    
+  }
 }
