@@ -155,7 +155,7 @@ export class ImageProcessingService {
       }
     }
 
-    let path = `./assets/images/Cup${size}${side_id}.png`
+    let path = `./assets/images/hype_scs_${size}${side_id}.png`
     return {w_rod : w_rod, h_rod : h_rod, pos_y : pos_y, axDiaX : axDiaX, pathLink : path}
   }
 
