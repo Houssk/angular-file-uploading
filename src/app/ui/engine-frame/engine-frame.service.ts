@@ -6,9 +6,10 @@ import {RendererService} from '@app/services/three/renderer.service';
 import {LightService} from '@app/services/three/light.service';
 import {SceneService} from '@app/services/three/scene.service';
 import {AxesHelper} from "three";
-import { Xliff2 } from '@angular/compiler';
-import { Utils } from '@app/shared/class/Utils';
-
+import {Xliff2} from '@angular/compiler';
+import {Utils} from '@app/shared/class/Utils';
+import {FileUploadService} from '@app/file-upload/file-upload.service';
+import {ImageProcessingService} from "@app/shared/service/image-processing.service";
 
 declare global {
   interface Window {
@@ -21,6 +22,8 @@ declare global {
   providedIn: 'root'
 })
 export class EngineFrameService implements OnDestroy {
+  pathCup: string;
+  pathRod: string;
   canvas: HTMLCanvasElement;
   renderer: THREE.WebGLRenderer;
   camera: THREE.OrthographicCamera;
@@ -39,6 +42,8 @@ export class EngineFrameService implements OnDestroy {
     private cameraService: CameraService, private rendererService: RendererService,
     private lightService: LightService,
     private sceneService: SceneService,
+    private fileUploadService: FileUploadService,
+    private imageProcessing: ImageProcessingService
   ) {
   }
 
@@ -105,188 +110,242 @@ export class EngineFrameService implements OnDestroy {
     }
   }
 
+  //Load the image and display it
   public loadImage(fileName, size, ratio) {
     const pathLink = `./assets/files/${fileName}`
     const texture = new THREE.TextureLoader().load(pathLink);
 
     const box = new THREE.Mesh(
-      new THREE.BoxGeometry(size['width']*ratio, size['height']*ratio, 1),
+      new THREE.BoxGeometry(size['width'] * ratio, size['height'] * ratio, 1),
       new THREE.MeshBasicMaterial({
         map: texture
       }));
     this.scene.add(box);
   }
 
+  //Display the circle detected
+  public displayCircle(points, size, ratio) {
 
+    let new_radius = points['radius'] * ratio
 
-  public displayCircle(points, size, ratio){
-    
-    let new_radius = points['radius']*ratio
-  
-    const circle = new THREE.Mesh( 
-      new THREE.RingGeometry( new_radius, new_radius + 0.5, 20), 
+    const circle = new THREE.Mesh(
+      new THREE.RingGeometry(new_radius, new_radius + 0.5, 20),
       new THREE.MeshNormalMaterial()
     );
- 
-    let middle_x = size['width']/2
-    let middle_y = size['height']/2
 
-    let new_x = points['x']*ratio - middle_x*ratio
-    let new_y = - points['y']*ratio + middle_y*ratio
+    let middle_x = size['width'] / 2
+    let middle_y = size['height'] / 2
+
+    let new_x = points['x'] * ratio - middle_x * ratio
+    let new_y = -points['y'] * ratio + middle_y * ratio
 
     circle.position.set(new_x, new_y, 1)
 
-    this.scene.add( circle );
+    this.scene.add(circle);
   }
 
-
-
-  public displayDetection(landmark, size, ratio){
+  //Display the detected landmarks
+  public displayDetection(landmark, size, ratio) {
 
     const point = new THREE.Mesh(
-      new THREE.SphereGeometry( 1, 5, 5 ),
-      new THREE.MeshBasicMaterial({ color: 0xff0000 })
-      );
-    
-    let middle_x = size['width']/2
-    let middle_y = size['height']/2
+      new THREE.SphereGeometry(1, 5, 5),
+      new THREE.MeshBasicMaterial({color: 0xff0000})
+    );
 
-    let new_x = landmark['x']*ratio - middle_x*ratio
-    let new_y = - landmark['y']*ratio + middle_y*ratio
-    
+    let middle_x = size['width'] / 2
+    let middle_y = size['height'] / 2
+
+    let new_x = landmark['x'] * ratio - middle_x * ratio
+    let new_y = -landmark['y'] * ratio + middle_y * ratio
+
     point.position.set(new_x, new_y, 0)
-    
+
     this.scene.add(point)
 
   }
 
-  
-  public onLandmarksDisplayCup(landmark, size, ratio, scale, side: string){
-    let pathLink: string
-    pathLink='undefined'
+  //Identify the size and position of the cup and display it
+  public onLandmarksDisplayCup(center, corner, size, ratio, scale, side: string) {
+    let new_w = 0
+    let new_h = 0
 
-    // wPix=1136	hPix=915	wCm=9.62	hCm=7.75
-    if (side=='right'){
-      pathLink = `./assets/images/Cup49_R.png`
-    }
-    else if (side=='left'){
-      pathLink = `./assets/images/Cup49.png`
-    }
-    
-    const texture = new THREE.TextureLoader().load(pathLink)
-
-    let new_w = 96.2/scale
-    let new_h = 77.5/scale
-
+    let a = center['x'] - corner['x'];
+    let b = center['y'] - corner['y'];
+    let radius = Math.sqrt(a * a + b * b) * ratio * scale;
+    [new_w, new_h] = this.selectCupSize(side, radius, scale)
+    const texture = new THREE.TextureLoader().load(this.pathCup)
     const cup = new THREE.Mesh(
       new THREE.BoxGeometry(new_w, new_h, 1),
       new THREE.MeshBasicMaterial({
         map: texture,
         transparent: true
       }));
-
-    let middle_x = size['width']/2
-    let middle_y = size['height']/2
-  
-    let new_x = landmark['x']*ratio - middle_x*ratio
-    let new_y = - landmark['y']*ratio + middle_y*ratio
-      
+    let middle_x = size['width'] / 2
+    let middle_y = size['height'] / 2
+    let new_x = center['x'] * ratio - middle_x * ratio
+    let new_y = -center['y'] * ratio + middle_y * ratio
     cup.position.set(new_x, new_y, 0)
-
     this.scene.add(cup);
   }
 
-
-  public onLandmarksDisplayRod(topAx, botAx, center, size, ratio, scale, side: string){
-    let pathLink: string
-    pathLink='undefined'
-    let pos_x = 0
+  //Identify the size and position of the rod and display it
+  public onLandmarksDisplayRod(topAx, botAx, center, btroch, size, ratio, scale, side: string) {
     let pos_y = 0
     let rot = 0
     let axDiaX = 0
-
-    // wPix=215	wCm=5.46	hPix=800	hCm=20.32 rapportmm/px=O.254
-    if (side=='right'){
-      pathLink = `./assets/images/hype_scs_T3_R.png` //ptmecahaut x=81.5 y=371 //axDiaph x=-80
-      pos_x = 81.5 //can be commented
-      pos_y = 371
-      axDiaX = -80
-    }
-    else if (side=='left'){
-      pathLink = `./assets/images/hype_scs_T3.png` //ptmecahaut x=-79.5 y=371 //axDiaph x=78
-      pos_x = -79.5
-      pos_y = 371
-      axDiaX = 78
-    }
-
-    const texture = new THREE.TextureLoader().load(pathLink)
-
-    let new_w = 54.6/scale
-    let new_h = 203.2/scale
-
-    const rod = new THREE.Mesh(
-      new THREE.BoxGeometry(new_w, new_h, 1),
-      new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true
-      }));
-
-    //define the middle of the image wich will be the point O of the application world
-    let middle_x = size['width']/2
-    let middle_y = size['height']/2
-
+    let new_w = 0 //54.6/scale
+    let new_h = 0 //203.2/scale
+    let h_cut = 0
     //Find the directing coef to find the angle between the detected axe and the vertical line
-    const x1 = topAx['x']
-    const y1 = topAx['y']
-    const x2 = botAx['x']
-    const y2 = botAx['y']
-    let a = 0
-    if ((x1-x2) != 0) {
-      a = (y2-y1)/(x2-x1) }
-    else {
-      a = (y2-y1/0.001) }
+    let a = this.imageProcessing.getSlope(topAx['x'], topAx['y'], botAx['x'], botAx['y'])
+    //Find the final angle
+    rot = this.imageProcessing.getFinalAngle(topAx['x'], botAx['x']);
+    const angle = Math.atan(a) + rot;
+    //Find the markers of the femoral width
+    let markers = this.determineRodMarkers(h_cut, topAx, btroch, angle).then(value => {
+      console.log(markers);
+      console.log(value);
+      let femoral_w = this.imageProcessing.getFemoralWidth(value, ratio, scale);
+      [new_w, new_h, pos_y, axDiaX] = this.selectRodSize(side, femoral_w, scale);
+      //Display the textre with the correct size
+      const texture = new THREE.TextureLoader().load(this.pathRod)
+      const rod = new THREE.Mesh(
+        new THREE.BoxGeometry(new_w, new_h, 1),
+        new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true
+        }));
 
-    //Find the final angle 
-    if (topAx['x']>botAx['x']){
-      rot= Math.PI/2
+      //define the middle of the image wich will be the point O of the application world
+      let middle_x = size['width'] / 2
+      let middle_y = size['height'] / 2
+
+      //define the position of the topAx point in the application world
+      let topAx_x = topAx['x'] * ratio - middle_x * ratio
+      let topAx_y = -topAx['y'] * ratio + middle_y * ratio
+
+      //define the position to the center of the rod layer before the rotation
+      let x_before_rotate = topAx_x - (axDiaX * 0.254 / scale)
+      let y_before_rotate = topAx_y - (pos_y * 0.254 / scale)
+
+      //define the point and the axis around which the image will rotate
+      const point_rot = new THREE.Vector3(topAx_x, topAx_y, 0);
+      const axis_rot = new THREE.Vector3(0, 0, 1)
+
+      //apply rotation
+      Utils.rotateAroundWorldAxis(rod, point_rot, axis_rot, -angle)
+
+      //reset position according to the rotation
+      let dist = (center['y'] - topAx['y']) * ratio
+      let x_after_rotate = x_before_rotate + Math.tan(angle) * dist
+      let y_after_rotate = y_before_rotate - dist
+      rod.position.set(x_after_rotate, y_after_rotate, 0)
+
+      this.scene.add(rod);
+    })
+  }
+
+  //Select the cup size from the femoral radius detected
+  public selectCupSize(side: string, radius: number, scale: number) {
+    let pathLink = 'undefined'
+    let side_id = ''
+    let size = 0
+    let w_cup = 0
+    let h_cup = 0
+
+    if (side == 'right') {
+      side_id = '_R'
     }
-    else {
-      rot= - Math.PI/2
+
+    if (radius < 46) {
+      size = 45
+      if (side == 'right') {
+        w_cup = 64.52 / scale
+        h_cup = 67.3 / scale
+      } else if (side == 'left') {
+        w_cup = 66 / scale
+        h_cup = 68.8 / scale
+      }
+    } else if (radius < 48) {
+      size = 47
+      if (side == 'right') {
+        w_cup = 59.9 / scale
+        h_cup = 62.7 / scale
+      } else if (side == 'left') {
+        w_cup = 70.87 / scale
+        h_cup = 70.1 / scale
+      }
+    } else if (radius < 50) {
+      size = 49
+      w_cup = 96.2 / scale
+      h_cup = 77.5 / scale
+    } else if (radius < 52) {
+      size = 51
+      w_cup = 96.2 / scale
+      h_cup = 77.5 / scale
+    } else if (radius < 54) {
+      size = 53
+      w_cup = 96.2 / scale
+      h_cup = 77.5 / scale
+    } else if (radius < 56) {
+      size = 55
+      w_cup = 96.2 / scale
+      h_cup = 77.5 / scale
+    } else if (radius < 58) {
+      size = 57
+      w_cup = 96.2 / scale
+      h_cup = 77.5 / scale
+    } else if (radius < 60) {
+      size = 59
+      w_cup = 96.2 / scale
+      h_cup = 77.5 / scale
+    } else if (radius < 62) {
+      size = 61
+      w_cup = 96.2 / scale
+      h_cup = 77.5 / scale
+    } else if (radius > 62) {
+      size = 63
+      w_cup = 96.2 / scale
+      h_cup = 77.5 / scale
     }
-    const angle = Math.atan(a) + rot
 
-    //define the position of the topAx point in the application world
-    let topAx_x = topAx['x']*ratio - middle_x*ratio
-    let topAx_y = - topAx['y']*ratio + middle_y*ratio
+    pathLink = `./assets/images/Cup${size}${side_id}.png`
+    this.pathCup = pathLink
+    return [w_cup, h_cup]
+  }
 
-    //define the position to the center of the rod layer before the rotation 
-    let x_before_rotate = topAx_x - (axDiaX*0.254/scale)
-    let y_before_rotate = topAx_y - (pos_y*0.254/scale)
-
-    //define the point and the axis around which the image will rotate
-    const point_rot = new THREE.Vector3( topAx_x, topAx_y, 0 );
-    const axis_rot = new THREE.Vector3(0, 0, 1)
-
-    // TO DELETE
-    const point = new THREE.Mesh(
-      new THREE.SphereGeometry( 1, 5, 5 ),
-      new THREE.MeshBasicMaterial({ color: 0x0000ff })
-      );
-    point.position.set(x_before_rotate, y_before_rotate, 0)
-    this.scene.add(point);
-    //
-
-    //apply rotation
-    Utils.rotateAroundWorldAxis(rod, point_rot, axis_rot, -angle)
-
-    //reset position according to the rotation
-    let dist = (center['y']-topAx['y'])*ratio
-    let x_after_rotate = x_before_rotate + Math.tan(angle)*dist
-    let y_after_rotate = y_before_rotate - dist
-    rod.position.set(x_after_rotate, y_after_rotate, 0)
-
-    this.scene.add(rod);
+  //Select the cup size from the femoral width detected
+  public selectRodSize(side: string, femoral_w: number, scale: number) {
+    let pathLink = 'undefined'
+    let side_id = ''
+    let size = ''
+    let w_rod = 0
+    let h_rod = 0
+    let pos_y = 0
+    let axDiaX = 0
+    this.imageProcessing.computeSize(femoral_w, size, w_rod, h_rod, pos_y, axDiaX, scale, side);
+    if (side == 'right') {
+      side_id = '_R'
+    }
+    pathLink = `./assets/images/hype_scs_${size}${side_id}.png`
+    this.pathRod = pathLink
+    return [w_rod, h_rod, pos_y, axDiaX]
   }
 
 
+  //Determine the size of the rod
+  public async determineRodMarkers(yCut, diaph, troch, angle) {
+    let xDiaph = diaph['x']
+    let yDiaph = diaph['y']
+    let xTroch = troch['x']
+    let yTroch = troch['y']
+
+    return new Promise(resolve => {
+      this.fileUploadService.size(yCut, xDiaph, yDiaph, xTroch, yTroch, angle, 'rodSize').subscribe( //this.path
+        (event: any) => { //event will be ['left x y', 'right x y']
+          console.log(event)
+          resolve(event)
+        });
+    })
+  }
 }
