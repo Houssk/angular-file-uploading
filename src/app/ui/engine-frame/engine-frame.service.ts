@@ -195,7 +195,8 @@ export class EngineFrameService implements OnDestroy {
     let axDiaX = 0
     let new_w = 0 //54.6/scale
     let new_h = 0 //203.2/scale
-    let h_cut = 0
+    let h_cut = 50/(scale*ratio) // 50mm :distance from bTroch at which the diaphyseal width is measured (in original pixels)
+
     //Find the directing coef to find the angle between the detected axe and the vertical line
     let a = this.imageProcessing.getSlope(topAx['x'], topAx['y'], botAx['x'], botAx['y'])
     //Find the final angle
@@ -207,7 +208,7 @@ export class EngineFrameService implements OnDestroy {
       console.log(value);
       let femoral_w = this.imageProcessing.getFemoralWidth(value, ratio, scale);
       [new_w, new_h, pos_y, axDiaX] = this.selectRodSize(side, femoral_w, scale);
-      //Display the textre with the correct size
+      //Display the texture with the correct size
       const texture = new THREE.TextureLoader().load(this.pathRod)
       const rod = new THREE.Mesh(
         new THREE.BoxGeometry(new_w, new_h, 1),
@@ -316,18 +317,9 @@ export class EngineFrameService implements OnDestroy {
 
   //Select the cup size from the femoral width detected
   public selectRodSize(side: string, femoral_w: number, scale: number) {
-    let pathLink = 'undefined'
-    let side_id = ''
-    let size = ''
-    let w_rod = 0
-    let h_rod = 0
-    let pos_y = 0
-    let axDiaX = 0
-    this.imageProcessing.computeSize(femoral_w, size, w_rod, h_rod, pos_y, axDiaX, scale, side);
-    if (side == 'right') {
-      side_id = '_R'
-    }
-    pathLink = `./assets/images/hype_scs_${size}${side_id}.png`
+
+    const {w_rod, h_rod, pos_y, axDiaX, pathLink} = this.imageProcessing.computeSize(femoral_w, scale, side);
+
     this.pathRod = pathLink
     return [w_rod, h_rod, pos_y, axDiaX]
   }
