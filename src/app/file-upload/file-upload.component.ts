@@ -69,21 +69,22 @@ export class FileUploadComponent implements OnInit {
   //OnClik of button Automatic detection
   onDetection() {
     this.loading = !this.loading;
-    console.log(this.file[0]);
+
     this.fileUploadService.detection(this.form, 'detection').subscribe( //this.path
       (event: any) => {
         this.shortLink = `${environment.serverLink}/${event.filename}`;
         const size = event[0]['original_size']
         this.response = event[0];
         this.loading = false; // Flag variable
+
         const arrayPoint = ['big_troch', 'little_troch', 'bot_ax', 'top_ax', 'center', 'corner'];
         arrayPoint.forEach(point => {
           this.engineFrameService.displayDetection(event[0]['detection'][point], size, this.ratio); //big_troch
         })
-        this.engineFrameService.onLandmarksDisplayCup(event[0]['detection']['center'], size, this.ratio, this.scale, event[0]['side'])
-        this.engineFrameService.onLandmarksDisplayRod(event[0]['detection']['top_ax'], event[0]['detection']['bot_ax'], event[0]['detection']['center'], size, this.ratio, this.scale, event[0]['side'])
-
+        this.engineFrameService.onLandmarksDisplayCup(event[0]['detection']['center'], event[0]['detection']['corner'], size, this.ratio, this.scale, event[0]['side'])
+        this.engineFrameService.onLandmarksDisplayRod(event[0]['detection']['top_ax'], event[0]['detection']['bot_ax'], event[0]['detection']['center'], event[0]['detection']['big_troch'], size, this.ratio, this.scale, event[0]['side'])
       }
     );
   }
 }
+
