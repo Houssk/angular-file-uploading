@@ -31,6 +31,7 @@ chrome-profiler-events*.json
 .history/*
 
 # misc
+./.angular/*
 /.angular/cache
 /.sass-cache
 /connect.lock
@@ -45,4 +46,4 @@ testem.log
 .DS_Store
 Thumbs.db
 /.vscode/
-src/assets/files/
+/src/assets/files/*

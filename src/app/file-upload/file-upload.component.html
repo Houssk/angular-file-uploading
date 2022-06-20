@@ -1,51 +1,66 @@
-<div class="container">
-  <!-- Part to upload an image -->
-  <div class="row">
-    <div class="col input-group">
-      <input class="form-control" type="file" (change)="onChange($event)" required>
-      <button [disabled]=!this.file 
-              (click)="onUpload()" 
-              class="btn btn-success" >
-              Upload
+<div class="accordion" id="accordionIA">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        File processing
       </button>
-    </div>
-  </div>
-  <!-- Form to fill to launch the lanfmarks detection -->
-  <form [formGroup]="form">
-    <div class="row">
-      <label>
-        Nombre de hanches :
-        <div class="col">
-          <input name="nbrHip" ng-control="options" type="radio" formControlName="nbrHip" [value]="1"  /> 1
-          <input name="nbrHip" ng-control="options" type="radio" formControlName="nbrHip" [value]="2"  /> 2
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionIA">
+      <div class="accordion-body">
+        <div class="input-group">
+          <input class="form-control" type="file" (change)="onChange($event)" required>
+          <button [disabled]=!this.file
+                  (click)="onUpload()"
+                  class="btn btn-success" >
+            Upload
+          </button>
         </div>
-      </label>
-    </div>
-    <div class="row">
-      <label>
-        Côté opéré :
-        <div class="col">
-          <input name="side" ng-control="options" type="radio" formControlName="side" [value]="1" /> Gauche 
-          <input name="side" ng-control="options" type="radio" formControlName="side" [value]="2" /> Droit
+        <div>
+          <form [formGroup]="form">
+            <div class="row">
+              <label class="text-center">
+                <br>
+                <button type="button" class="btn btn-primary">
+                  Nombre de hanches
+                </button>
+                <div class="col">
+                  <input name="nbrHip" ng-control="options" type="radio" formControlName="nbrHip" [value]="1"  /> 1
+                  <input name="nbrHip" ng-control="options" type="radio" formControlName="nbrHip" [value]="2"  /> 2
+                </div>
+                <br>
+              </label>
+            </div>
+            <div class="row">
+              <label class="text-center">
+                <br>
+                <button type="button" class="btn btn-primary">
+                  Côté opéré
+                </button>
+                <div class="col">
+                  <input name="side" ng-control="options" type="radio" formControlName="side" [value]="1" /> Gauche
+                  <input name="side" ng-control="options" type="radio" formControlName="side" [value]="2" /> Droit
+                </div>
+                <br>
+              </label>
+              <div class="col text-center">
+                <button [disabled]="verif() || !this.file" (click)="onDetection()"
+                        class="btn btn-success">
+                  Automatic Detection
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-      </label>
-      <div class="col">
-        <button [disabled]="verif() || !this.file" (click)="onDetection()"
-                class="btn btn-success">
-            Automatic Detection
-        </button>
+        <!-- Infos about returned by the backend -->
+        <div class="container text-center jumbotron"
+             *ngIf="shortLink">
+          <h6>{{ response | json }}</h6>
+        </div>
+        <!--Flag variable is used here-->
+        <div class="container" *ngIf="loading">
+          <h3>Loading ...</h3>
+        </div>
       </div>
     </div>
-  </form>
-</div>
-
-<!-- Infos about returned by the backend -->
-<div class="container text-center jumbotron"
-     *ngIf="shortLink">
-  <h6>{{ response | json }}</h6>
-</div>
-
-<!--Flag variable is used here-->
-<div class="container" *ngIf="loading">
-  <h3>Loading ...</h3>
+  </div>
 </div>
