@@ -165,16 +165,21 @@ export class ImageProcessingService {
   }
 
   getFemoralWidth(markers, ratio: any, scale: any) {
-    let marker_left = markers[0].split(' ') //left = ['left','x','y']
-    let marker_right = markers[1].split(' ') //right = ['right','x','y']
-    let x_marker_left = parseFloat(marker_left[1])
-    let y_marker_left = parseFloat(marker_left[2])
-    let x_marker_right = parseFloat(marker_right[1])
-    let y_marker_right = parseFloat(marker_right[2])
+    if (markers[0]=='Error') {
+      return 20 //correspond to a T3 stem
+    }
+    else {
+      let marker_left = markers[0].split(' ') //left = ['left','x','y']
+      let marker_right = markers[1].split(' ') //right = ['right','x','y']
+      let x_marker_left = parseFloat(marker_left[1])
+      let y_marker_left = parseFloat(marker_left[2])
+      let x_marker_right = parseFloat(marker_right[1])
+      let y_marker_right = parseFloat(marker_right[2])
 
-    //Find the femoral width
-    let c = x_marker_left - x_marker_right;
-    let d = y_marker_left - y_marker_right;
-    return Math.sqrt(c * c + d * d) * ratio * scale;
+      //Find the femoral width
+      let c = x_marker_left - x_marker_right;
+      let d = y_marker_left - y_marker_right;
+      return Math.sqrt(c * c + d * d) * ratio * scale;
+    }
   }
 }

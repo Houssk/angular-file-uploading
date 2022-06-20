@@ -336,7 +336,7 @@ export class EngineFrameService implements OnDestroy {
 
     return new Promise(resolve => {
       this.fileUploadService.size(yCut, xDiaph, yDiaph, xTroch, yTroch, angle, 'rodSize').subscribe( //this.path
-        (event: any) => { //event will be ['left x y', 'right x y']
+        (event: any) => { //event will be ['left x y', 'right x y'] or ['Error'] if no detection
           resolve(event)
         });
     })
