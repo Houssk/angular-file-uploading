@@ -60,7 +60,7 @@ export class FileUploadComponent implements OnInit {
         this.loading = false; // Flag variable
         this.engineFrameService.loadImage(event[1], size, this.ratio);
         this.engineFrameService.displayCircle(event[0]['detection'], size, this.ratio);
-        let circleRadius = 12 //12mm
+        let circleRadius = 13.5 //12mm
         this.scale = circleRadius / (event[0]['detection']['radius'] * this.ratio)
       }
     );

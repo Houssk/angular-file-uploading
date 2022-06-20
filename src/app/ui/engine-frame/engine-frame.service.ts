@@ -253,12 +253,13 @@ export class EngineFrameService implements OnDestroy {
     let size = 0
     let w_cup = 0
     let h_cup = 0
+    let dia = radius*2
 
     if (side == 'right') {
       side_id = '_R'
     }
 
-    if (radius < 46) {
+    if (dia < 46) {
       size = 45
       if (side == 'right') {
         w_cup = 64.52 / scale
@@ -267,7 +268,7 @@ export class EngineFrameService implements OnDestroy {
         w_cup = 66 / scale
         h_cup = 68.8 / scale
       }
-    } else if (radius < 48) {
+    } else if (dia < 48) {
       size = 47
       if (side == 'right') {
         w_cup = 59.9 / scale
@@ -276,40 +277,41 @@ export class EngineFrameService implements OnDestroy {
         w_cup = 70.87 / scale
         h_cup = 70.1 / scale
       }
-    } else if (radius < 50) {
+    } else if (dia < 50) {
       size = 49
       w_cup = 96.2 / scale
       h_cup = 77.5 / scale
-    } else if (radius < 52) {
+    } else if (dia < 52) {
       size = 51
       w_cup = 96.2 / scale
       h_cup = 77.5 / scale
-    } else if (radius < 54) {
+    } else if (dia < 54) {
       size = 53
       w_cup = 96.2 / scale
       h_cup = 77.5 / scale
-    } else if (radius < 56) {
+    } else if (dia < 56) {
       size = 55
       w_cup = 96.2 / scale
       h_cup = 77.5 / scale
-    } else if (radius < 58) {
+    } else if (dia < 58) {
       size = 57
       w_cup = 96.2 / scale
       h_cup = 77.5 / scale
-    } else if (radius < 60) {
+    } else if (dia < 60) {
       size = 59
       w_cup = 96.2 / scale
       h_cup = 77.5 / scale
-    } else if (radius < 62) {
+    } else if (dia < 62) {
       size = 61
       w_cup = 96.2 / scale
       h_cup = 77.5 / scale
-    } else if (radius > 62) {
+    } else if (dia > 62) {
       size = 63
       w_cup = 96.2 / scale
       h_cup = 77.5 / scale
     }
 
+    console.log('rayon mesuré ', radius)
     pathLink = `./assets/images/Cup${size}${side_id}.png`
     this.pathCup = pathLink
     return [w_cup, h_cup]
