@@ -42,7 +42,14 @@ export class FileUploadService {
     ]);
 
     const data2send = JSON.parse(infos)
-    return this.http.post(`${this.baseApiUrl}/${path}`, data2send);
+
+    // Make http post request over api
+    const headers = new HttpHeaders();
+    headers.set("Accept", "application/json")
+      .set('Content-Type', 'application/json')
+      .set('Access-Control-Allow-Origin', '*');
+
+    return this.http.post(`${this.baseApiUrl}/${path}`, data2send, {headers});
 
   }
 
