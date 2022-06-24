@@ -314,6 +314,7 @@ export class EngineFrameService implements OnDestroy {
     console.log('rayon mesuré ', radius)
     pathLink = `./assets/images/Cup${size}${side_id}.png`
     this.pathCup = pathLink
+    console.log("Cupule : ", size)
     return [w_cup, h_cup]
   }
 
@@ -321,7 +322,7 @@ export class EngineFrameService implements OnDestroy {
   public selectRodSize(side: string, femoral_w: number, scale: number) {
 
     const {w_rod, h_rod, pos_y, axDiaX, pathLink} = this.imageProcessing.computeSize(femoral_w, scale, side);
-
+    console.log("Tige : ", pathLink)
     this.pathRod = pathLink
     return [w_rod, h_rod, pos_y, axDiaX]
   }
