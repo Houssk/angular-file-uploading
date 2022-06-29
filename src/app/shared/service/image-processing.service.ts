@@ -18,6 +18,7 @@ export class ImageProcessingService {
     let w_rod=0
     let h_rod=0
     let pos_y=0
+    let pos_x=0
     let axDiaX=0
 
 
@@ -28,9 +29,11 @@ export class ImageProcessingService {
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 73
         axDiaX = -77
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -73
         axDiaX = 77
       }
     } else if (femoral_w < 19.7) { //16.9 to 19.7
@@ -40,9 +43,11 @@ export class ImageProcessingService {
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 76
         axDiaX = -78
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -76
         axDiaX = 78
       }
     } else if (femoral_w < 22.6) { //19.7 to 22.6 
@@ -52,21 +57,25 @@ export class ImageProcessingService {
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 81.5
         axDiaX = -77.5
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -79.5
         axDiaX = 77.5
       }
-    } else if (femoral_w < 25.5) { //22.6 to 25.5 
+    } else if (femoral_w < 25.5 || femoral_w > 60) { //22.6 to 25.5 ; if >60, it refers to abad detection so we affect a default stem size
       size = 'T4'
       w_rod = 56.1 / scale
       h_rod = 203.2 / scale
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 83.5
         axDiaX = -78.5
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -82.5
         axDiaX = 78.5
       }
     } else if (femoral_w < 28.4) { //25.5 to 28.4 
@@ -76,9 +85,11 @@ export class ImageProcessingService {
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 87
         axDiaX = -79
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -86
         axDiaX = 79
       }
     } else if (femoral_w < 31.2) { //28.4 to 31.2 
@@ -88,9 +99,11 @@ export class ImageProcessingService {
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 90.5
         axDiaX = -79.5
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -89.5
         axDiaX = 79.5
       }
     } else if (femoral_w < 34.1) { //31.2 to 34.1 
@@ -100,9 +113,11 @@ export class ImageProcessingService {
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 94
         axDiaX = -80
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -93
         axDiaX = 80
       }
     } else if (femoral_w < 37) { //34.1 to 37
@@ -112,9 +127,11 @@ export class ImageProcessingService {
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 97
         axDiaX = -81
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -96
         axDiaX = 81
       }
     } else if (femoral_w < 39.8) { //37 to 39.8  
@@ -124,9 +141,11 @@ export class ImageProcessingService {
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 100.5
         axDiaX = -82.5
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -99.5
         axDiaX = 82.5
       }
     } else if (femoral_w < 42.7) { //39.8 to 42.7
@@ -136,28 +155,32 @@ export class ImageProcessingService {
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 103.5
         axDiaX = -83.5
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -102.5
         axDiaX = 83.5
       }
-    } else if (femoral_w > 42.7) { //no infos
+    } else if (femoral_w < 60) { //42.7 to ?? (after 60, it refers to a wrong detection )
       size = 'T11'
       w_rod = 67.3 / scale
       h_rod = 203.2 / scale
       if (side == 'right') {
         side_id = '_R'
         pos_y = 371
+        pos_x = 105.5
         axDiaX = -84.5
       } else if (side == 'left') {
         pos_y = 371
+        pos_x = -104.5
         axDiaX = 84.5
       }
     }
 
     console.log('largeur à 50mm :', femoral_w)
     let path = `./assets/images/hype_scs_${size}${side_id}.png`
-    return {w_rod : w_rod, h_rod : h_rod, pos_y : pos_y, axDiaX : axDiaX, pathLink : path}
+    return {w_rod : w_rod, h_rod : h_rod, pos_x : pos_x, pos_y : pos_y, axDiaX : axDiaX, pathLink : path}
   }
 
   getSlope(x1: any, y1: any, x2: any, y2: any) {
@@ -166,7 +189,7 @@ export class ImageProcessingService {
 
   getFemoralWidth(markers, ratio: any, scale: any) {
     if (markers[0]=='Error') {
-      return 20 //correspond to a T3 stem
+      return 23 //correspond to a T4 stem
     }
     else {
       let marker_left = markers[0].split(' ') //left = ['left','x','y']

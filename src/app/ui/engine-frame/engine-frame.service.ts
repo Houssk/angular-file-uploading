@@ -190,6 +190,7 @@ export class EngineFrameService implements OnDestroy {
 
   //Identify the size and position of the rod and display it
   public onLandmarksDisplayRod(topAx, botAx, center, btroch, size, ratio, scale, side: string) {
+    let pos_x
     let pos_y = 0
     let rot = 0
     let axDiaX = 0
@@ -207,7 +208,7 @@ export class EngineFrameService implements OnDestroy {
       console.log(markers);
       console.log(value);
       let femoral_w = this.imageProcessing.getFemoralWidth(value, ratio, scale);
-      [new_w, new_h, pos_y, axDiaX] = this.selectRodSize(side, femoral_w, scale);
+      [new_w, new_h, pos_x, pos_y, axDiaX] = this.selectRodSize(side, femoral_w, scale);
       //Display the texture with the correct size
       const texture = new THREE.TextureLoader().load(this.pathRod)
       const rod = new THREE.Mesh(
@@ -222,25 +223,31 @@ export class EngineFrameService implements OnDestroy {
       let middle_y = size['height'] / 2
 
       //define the position of the topAx point in the application world
-      let topAx_x = topAx['x'] * ratio - middle_x * ratio
-      let topAx_y = -topAx['y'] * ratio + middle_y * ratio
+      let world_topAx_x = topAx['x'] * ratio - middle_x * ratio
+      let world_topAx_y = -topAx['y'] * ratio + middle_y * ratio
 
       //define the position to the center of the rod layer before the rotation
-      let x_before_rotate = topAx_x - (axDiaX * 0.254 / scale)
-      let y_before_rotate = topAx_y - (pos_y * 0.254 / scale)
+      let rodImageRatio = 0.254 // mm/pix 
+      let world_pos_x = pos_x * rodImageRatio / scale
+      let world_pos_y = pos_y * rodImageRatio / scale
+      let world_axDiaX = axDiaX * rodImageRatio / scale
+      let x_before_rotate = world_topAx_x - world_axDiaX 
+      let y_before_rotate = world_topAx_y - world_pos_y
+      let pos_x_before_rotate = x_before_rotate + world_pos_x
 
       //define the point and the axis around which the image will rotate
-      const point_rot = new THREE.Vector3(topAx_x, topAx_y, 0);
+      const point_rot = new THREE.Vector3(world_topAx_x , world_topAx_y, 0); 
       const axis_rot = new THREE.Vector3(0, 0, 1)
 
+      rod.position.set(x_before_rotate, y_before_rotate, 0)
       //apply rotation
       Utils.rotateAroundWorldAxis(rod, point_rot, axis_rot, -angle)
+      
+      let dist = (center['y'] - topAx['y']) * ratio //distance between the meca point and the center before rotation
+      let deltaRot = (pos_x_before_rotate-world_topAx_x)*Math.sin(-angle) //the y offset generated after rotation
 
-      //reset position according to the rotation
-      let dist = (center['y'] - topAx['y']) * ratio
-      let x_after_rotate = x_before_rotate + Math.tan(angle) * dist
-      let y_after_rotate = y_before_rotate - dist
-      rod.position.set(x_after_rotate, y_after_rotate, 0)
+      //apply a translation along the y axis of the rod layer (axis is rotated with the object)
+      rod.translateY(-dist-deltaRot)
 
       this.scene.add(rod);
     })
@@ -321,10 +328,10 @@ export class EngineFrameService implements OnDestroy {
   //Select the cup size from the femoral width detected
   public selectRodSize(side: string, femoral_w: number, scale: number) {
 
-    const {w_rod, h_rod, pos_y, axDiaX, pathLink} = this.imageProcessing.computeSize(femoral_w, scale, side);
+    const {w_rod, h_rod, pos_x, pos_y, axDiaX, pathLink} = this.imageProcessing.computeSize(femoral_w, scale, side);
     console.log("Tige : ", pathLink)
     this.pathRod = pathLink
-    return [w_rod, h_rod, pos_y, axDiaX]
+    return [w_rod, h_rod, pos_x, pos_y, axDiaX]
   }
 
 
