@@ -253,6 +253,96 @@ export class EngineFrameService implements OnDestroy {
     })
   }
 
+  //Calculate and display the femoral offset
+  public displayFemoralOffset(center, topAx, botAx, size, ratio, scale){
+      const middle_x = size['width'] / 2
+      const middle_y = size['height'] / 2
+      
+      const world_topAx_x = topAx['x'] * ratio - middle_x * ratio
+      const world_topAx_y = -topAx['y'] * ratio + middle_y * ratio
+      const world_botAx_x = botAx['x'] * ratio - middle_x * ratio
+      const world_botAx_y = -botAx['y'] * ratio + middle_y * ratio
+      const world_center_x = center['x'] * ratio - middle_x * ratio
+      const world_center_y = -center['y'] * ratio + middle_y * ratio
+
+      const centerVector = new THREE.Vector3(world_center_x, world_center_y, 0)
+      const fPointVector = this.calculateFemoralOffset(world_center_x, world_center_y, world_topAx_x, world_topAx_y, world_botAx_x, world_botAx_y)
+
+      const femoralPoint = new THREE.Mesh(
+        new THREE.SphereGeometry(1, 5, 5),
+        new THREE.MeshBasicMaterial({color: 0xffff00})
+      );
+      femoralPoint.position.set(fPointVector.x, fPointVector.y, fPointVector.z)
+      this.scene.add(femoralPoint);
+
+      const centerPoint = new THREE.Mesh(
+        new THREE.SphereGeometry(1, 5, 5),
+        new THREE.MeshBasicMaterial({color: 0xffff00})
+      );
+      centerPoint.position.set(centerVector.x, centerVector.y, centerVector.z)
+      this.scene.add(centerPoint);
+
+      const points = [centerVector, fPointVector];
+      const line = new THREE.Line( 
+        new THREE.BufferGeometry().setFromPoints( points ), 
+        new THREE.LineBasicMaterial( { color: 0xffff00 } )
+        );
+      line.translateZ(1)
+      this.scene.add( line );
+      
+      const dist = centerVector.distanceTo(fPointVector)
+
+      const resultDist = (dist*scale).toPrecision(5).toString() + " mm";
+      const val = this.makeTextSprite( resultDist, 
+        { fontsize: 44, textColor: {r:255, g:255, b:0, a:1.0}} );
+      val.position.set(centerVector.x, centerVector.y+5, 1)
+      this.scene.add(val);
+  }
+
+  //calculate the femoral offset
+  public calculateFemoralOffset(centerX: number, centerY: number, topAxX: number, topAxY: number, botAxX: number, botAxY: number) {
+
+    const top = new THREE.Vector3(topAxX, topAxY, 0)
+    const bot = new THREE.Vector3(botAxX, botAxY, 0)
+    const center = new THREE.Vector3(centerX, centerY, 0);
+    const diaphAxis = new THREE.Line3(top, bot)
+
+    let target = new THREE.Vector3(0, 0, 0)
+
+    diaphAxis.closestPointToPoint(center, false, target)
+    console.log(target)
+    return target
+  }
+
+  //display a text
+  public makeTextSprite( message, parameters )
+    {
+        if ( parameters === undefined ) parameters = {};
+        var fontface = parameters.hasOwnProperty("fontface") ? parameters["fontface"] : "Courier New";
+        var fontsize = parameters.hasOwnProperty("fontsize") ? parameters["fontsize"] : 18;
+        var borderThickness = parameters.hasOwnProperty("borderThickness") ? parameters["borderThickness"] : 4;
+        var borderColor = parameters.hasOwnProperty("borderColor") ?parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+        var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?parameters["backgroundColor"] : { r:0, g:0, b:255, a:1.0 };
+        var textColor = parameters.hasOwnProperty("textColor") ?parameters["textColor"] : { r:0, g:0, b:0, a:1.0 };
+
+        var canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        context!.font = "Bold " + fontsize + "px " + fontface;
+        var metrics = context!.measureText( message );
+
+        context!.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + "," + backgroundColor.b + "," + backgroundColor.a + ")";
+        context!.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + "," + borderColor.b + "," + borderColor.a + ")";
+        context!.fillStyle = "rgba("+textColor.r+", "+textColor.g+", "+textColor.b+", 1.0)";
+        context!.fillText( message, borderThickness, fontsize + borderThickness);
+
+        var texture = new THREE.Texture(canvas) 
+        texture.needsUpdate = true;
+        var spriteMaterial = new THREE.SpriteMaterial( {map: texture} );
+        var sprite = new THREE.Sprite( spriteMaterial );
+        sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
+        return sprite;  
+    }
+
   //Select the cup size from the femoral radius detected
   public selectCupSize(side: string, radius: number, scale: number) {
     let pathLink = 'undefined'

@@ -22,7 +22,7 @@ export class ImageProcessingService {
     let axDiaX=0
 
 
-    if (femoral_w < 16.9) { //14 to 16.9
+    if (femoral_w < 16.9) { //50mm : 14 to 16.9 ; 70mm : 9.9 to 11.7 ; 90mm : 7.6 to 9.1
       size = 'T1'
       w_rod = 51.3 / scale
       h_rod = 203.2 / scale
@@ -36,7 +36,7 @@ export class ImageProcessingService {
         pos_x = -73
         axDiaX = 77
       }
-    } else if (femoral_w < 19.7) { //16.9 to 19.7
+    } else if (femoral_w < 19.7) { //50mm : 16.9 to 19.7 ; 70mm : 11.7 to 13.7 ; 90mm : 9.1 to 10.5
       size = 'T2'
       w_rod = 52.8 / scale
       h_rod = 203.2 / scale
@@ -50,7 +50,7 @@ export class ImageProcessingService {
         pos_x = -76
         axDiaX = 78
       }
-    } else if (femoral_w < 22.6) { //19.7 to 22.6 
+    } else if (femoral_w < 22.6) { //50mm : 19.7 to 22.6 ; 70mm : 13.7 to 15.6 ; 90mm : 10.5 to 12
       size = 'T3'
       w_rod = 54.6 / scale
       h_rod = 203.2 / scale
@@ -64,7 +64,7 @@ export class ImageProcessingService {
         pos_x = -79.5
         axDiaX = 77.5
       }
-    } else if (femoral_w < 25.5 || femoral_w > 60) { //22.6 to 25.5 ; if >60, it refers to abad detection so we affect a default stem size
+    } else if (femoral_w < 25.5) { //50mm : 22.6 to 25.5 ; 70mm : 15.6 to 17.5 ; 90mm : 12 to 13.4
       size = 'T4'
       w_rod = 56.1 / scale
       h_rod = 203.2 / scale
@@ -78,7 +78,7 @@ export class ImageProcessingService {
         pos_x = -82.5
         axDiaX = 78.5
       }
-    } else if (femoral_w < 28.4) { //25.5 to 28.4 
+    } else if (femoral_w < 28.4) { //50mm : 25.5 to 28.4 ; 70mm : 17.5 to 19.4 ; 90mm : 13.4 to 14.9
       size = 'T5'
       w_rod = 57.9 / scale
       h_rod = 203.2 / scale
@@ -92,7 +92,7 @@ export class ImageProcessingService {
         pos_x = -86
         axDiaX = 79
       }
-    } else if (femoral_w < 31.2) { //28.4 to 31.2 
+    } else if (femoral_w < 31.2) { //50mm : 28.4 to 31.2 ; 70mm : 19.4 to 21.4 ; 90mm : 14.9 to 16.3
       size = 'T6'
       w_rod = 59.7 / scale
       h_rod = 203.2 / scale
@@ -106,7 +106,7 @@ export class ImageProcessingService {
         pos_x = -89.5
         axDiaX = 79.5
       }
-    } else if (femoral_w < 34.1) { //31.2 to 34.1 
+    } else if (femoral_w < 34.1) { //50mm : 31.2 to 34.1 ; 70mm : 21.4 to 23.3 ; 90mm : 16.3 to 17.8
       size = 'T7'
       w_rod = 61.5 / scale
       h_rod = 203.2 / scale
@@ -120,7 +120,7 @@ export class ImageProcessingService {
         pos_x = -93
         axDiaX = 80
       }
-    } else if (femoral_w < 37) { //34.1 to 37
+    } else if (femoral_w < 37) { //50mm : 34.1 to 37 ; 70mm : 23.3 to 25.2 ; 90mm : 17.8 to 19.2
       size = 'T8'
       w_rod = 63 / scale
       h_rod = 203.2 / scale
@@ -134,7 +134,7 @@ export class ImageProcessingService {
         pos_x = -96
         axDiaX = 81
       }
-    } else if (femoral_w < 39.8) { //37 to 39.8  
+    } else if (femoral_w < 39.8) { //50mm : 37 to 39.8 ; 70mm : 25.2 to 27.1 ; 90mm : 19.2 to 20.7 
       size = 'T9'
       w_rod = 64.8 / scale
       h_rod = 203.2 / scale
@@ -148,7 +148,7 @@ export class ImageProcessingService {
         pos_x = -99.5
         axDiaX = 82.5
       }
-    } else if (femoral_w < 42.7) { //39.8 to 42.7
+    } else if (femoral_w < 42.7) { //50mm : 39.8 to 42.7 ; 70mm : 27.1 to 29.1 ; 90mm : 20.7 to 22.1
       size = 'T10'
       w_rod = 66.3 / scale
       h_rod = 203.2 / scale
@@ -162,7 +162,7 @@ export class ImageProcessingService {
         pos_x = -102.5
         axDiaX = 83.5
       }
-    } else if (femoral_w < 60) { //42.7 to ?? (after 60, it refers to a wrong detection )
+    } else if (femoral_w >= 42.7) { //50mm : 42.7 to ?? ; 70mm : 29.1 to ?? ; 90mm : 22.1 to ?? 
       size = 'T11'
       w_rod = 67.3 / scale
       h_rod = 203.2 / scale

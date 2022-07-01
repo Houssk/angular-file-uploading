@@ -95,6 +95,8 @@ export class FileUploadComponent implements OnInit {
         })
         this.engineFrameService.onLandmarksDisplayCup(event[0]['detection']['center'], event[0]['detection']['corner'], size, this.displayedRatio, this.scale, event[0]['side'])
         this.engineFrameService.onLandmarksDisplayRod(event[0]['detection']['top_ax'], event[0]['detection']['bot_ax'], event[0]['detection']['center'], event[0]['detection']['big_troch'], size, this.displayedRatio, this.scale, event[0]['side'])
+        this.engineFrameService.displayFemoralOffset(event[0]['detection']['center'], event[0]['detection']['top_ax'], event[0]['detection']['bot_ax'], size, this.displayedRatio, this.scale)
+        
       }
     );
   }
