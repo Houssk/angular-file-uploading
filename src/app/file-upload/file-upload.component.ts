@@ -108,5 +108,30 @@ export class FileUploadComponent implements OnInit {
   onFemoralOffsetEstimation() {
     this.engineFrameService.displayFemoralOffset(this.detectedLandmarks['center'], this.detectedLandmarks['top_ax'], this.detectedLandmarks['bot_ax'], this.size, this.displayedRatio, this.scale)
   }
+
+  onHipHeightEstimation() {
+    this.loading = !this.loading;
+
+    let formHipForSecondHip = new FormGroup({
+      nbrHip: new FormControl('2'),
+      side: new FormControl('')
+    });
+
+    if (this.formHip.value['side']==1) {
+      formHipForSecondHip.value['side']=2 ; 
+    }
+    else {
+      formHipForSecondHip.value['side']=1 ;
+    }
+
+    this.fileUploadService.detection(formHipForSecondHip, 'detection').subscribe( //this.path
+      (event: any) => {
+        this.loading = false; // Flag variable
+        const secondLTroch = event[0]['detection']['little_troch']
+        this.engineFrameService.displayHeightEstimation(this.detectedLandmarks['little_troch'], secondLTroch, this.size, this.displayedRatio, this.scale)
+
+      }
+    );
+  }
 }
 

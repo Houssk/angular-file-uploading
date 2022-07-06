@@ -84,10 +84,15 @@
           </form>
         </div>
       <div>
+        <br>
         <div class="col text-center">
           <button [disabled]="this.detectedLandmarks == undefined" (click)="onFemoralOffsetEstimation()"
                   class="btn btn-success"> 
             Femoral offset
+          </button>
+          <button [disabled]="this.detectedLandmarks == undefined || this.formHip.value['nbrHip']==1" (click)="onHipHeightEstimation()"
+                  class="btn btn-success"> 
+            Hip Height
           </button>
         </div>
       </div>

@@ -314,6 +314,61 @@ export class EngineFrameService implements OnDestroy {
     return target
   }
 
+  public displayHeightEstimation(firstLTroch, secondLTroch, size, ratio, scale) {
+    const middle_x = size['width'] / 2
+    const middle_y = size['height'] / 2
+      
+    const world_firstLTroch_x = firstLTroch['x'] * ratio - middle_x * ratio
+    const world_firstLTroch_y = -firstLTroch['y'] * ratio + middle_y * ratio
+    const firstLTVector = new THREE.Vector3(world_firstLTroch_x, world_firstLTroch_y , 0)
+
+    const world_secondLTroch_x = secondLTroch['x'] * ratio - middle_x * ratio
+    const world_secondLTroch_y = -secondLTroch['y'] * ratio + middle_y * ratio
+    const secondLTVector = new THREE.Vector3(world_secondLTroch_x, world_secondLTroch_y, 0)
+
+    const heightVector = new THREE.Vector3(world_firstLTroch_x, world_secondLTroch_y, 0)
+
+    const firstLTlPoint = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 5, 5),
+      new THREE.MeshBasicMaterial({color: 0xffff00})
+    );
+    firstLTlPoint.position.set(world_firstLTroch_x, world_firstLTroch_y, 0)
+    this.scene.add(firstLTlPoint);
+
+    const secondLTlPoint = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 5, 5),
+      new THREE.MeshBasicMaterial({color: 0xffff00})
+    );
+    secondLTlPoint.position.set(world_secondLTroch_x , world_secondLTroch_y, 0)
+    this.scene.add(secondLTlPoint);
+
+    const height = firstLTVector.distanceTo(heightVector)
+
+    const pointsH = [firstLTVector, heightVector];
+      const lineH = new THREE.Line( 
+        new THREE.BufferGeometry().setFromPoints( pointsH ), 
+        new THREE.LineBasicMaterial( { color: 0xffff00 } )
+        );
+      lineH.translateZ(1)
+      this.scene.add( lineH );
+
+    const pointsW = [heightVector, secondLTVector];
+      const lineW = new THREE.Line( 
+        new THREE.BufferGeometry().setFromPoints( pointsW ), 
+        new THREE.LineBasicMaterial( { color: 0xffff00 } )
+        );
+      lineW.translateZ(1)
+      this.scene.add( lineW );
+
+      const resultHeight = (height*scale).toPrecision(4).toString() + " mm";
+      const val = this.makeTextSprite( resultHeight, 
+        { fontsize: 44, textColor: {r:255, g:255, b:0, a:1.0}} );
+      val.position.set(world_firstLTroch_x, world_firstLTroch_y+5, 1)
+      this.scene.add(val);
+
+  }
+
+
   //display a text
   public makeTextSprite( message, parameters )
     {
