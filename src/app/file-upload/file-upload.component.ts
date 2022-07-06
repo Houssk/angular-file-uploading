@@ -88,8 +88,10 @@ export class FileUploadComponent implements OnInit {
 
     this.fileUploadService.detection(this.formHip, 'detection').subscribe( //this.path
       (event: any) => {
+
         this.shortLink = `${environment.serverLink}/${event.filename}`;
         this.size = event[0]['original_size']
+
         this.response = event[0];
         this.loading = false; // Flag variable
         this.detectedLandmarks = event[0]['detection']
