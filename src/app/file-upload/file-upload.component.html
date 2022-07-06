@@ -44,7 +44,7 @@
           <button [disabled]=!this.fileUploaded
             class="btn btn-success"  
             (click)="openScale(content)">
-            Select diameter
+            Calibration
           </button> 
         </div>
         <div>
@@ -83,6 +83,14 @@
             </div>
           </form>
         </div>
+      <div>
+        <div class="col text-center">
+          <button [disabled]="this.detectedLandmarks == undefined" (click)="onFemoralOffsetEstimation()"
+                  class="btn btn-success"> 
+            Femoral offset
+          </button>
+        </div>
+      </div>
         <!-- Infos about returned by the backend -->
         <div class="container text-center jumbotron"
              *ngIf="shortLink">

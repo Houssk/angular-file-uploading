@@ -32,6 +32,8 @@ export class FileUploadComponent implements OnInit {
     nbrHip: new FormControl(''),
     side: new FormControl('')
   }); //checkbox form
+  detectedLandmarks: any;
+  size: any;
   
 
   // Inject service
@@ -42,7 +44,7 @@ export class FileUploadComponent implements OnInit {
   }
 
   verif() {
-    if (this.formHip.value['nbrHip'] == '' || this.formHip.value['side'] == '') {
+    if (this.formHip.value['nbrHip'] == '' || this.formHip.value['side'] == '' || (this.scale === undefined)) {
       return true
     } else {
       return false
@@ -75,7 +77,9 @@ export class FileUploadComponent implements OnInit {
   openScale(content) {
     this.modalService.open(content).result.then(() => {
       this.scale = this.formCircle.value['diam_mm'] / (this.diam_pix * this.displayedRatio)
-  });
+      console.log('diam cercle mm affichage '+ (this.diam_pix * this.displayedRatio))
+      console.log('coef agrandissement '+ 1/(this.scale))
+    });
   }
 
   //OnClik of button Automatic detection
@@ -85,20 +89,24 @@ export class FileUploadComponent implements OnInit {
     this.fileUploadService.detection(this.formHip, 'detection').subscribe( //this.path
       (event: any) => {
         this.shortLink = `${environment.serverLink}/${event.filename}`;
-        const size = event[0]['original_size']
+        this.size = event[0]['original_size']
         this.response = event[0];
         this.loading = false; // Flag variable
-
+        this.detectedLandmarks = event[0]['detection']
         const arrayPoint = ['big_troch', 'little_troch', 'bot_ax', 'top_ax', 'center', 'corner'];
         arrayPoint.forEach(point => {
-          this.engineFrameService.displayDetection(event[0]['detection'][point], size, this.displayedRatio); //big_troch
+          this.engineFrameService.displayDetection(this.detectedLandmarks[point], this.size, this.displayedRatio); //big_troch
         })
-        this.engineFrameService.onLandmarksDisplayCup(event[0]['detection']['center'], event[0]['detection']['corner'], size, this.displayedRatio, this.scale, event[0]['side'])
-        this.engineFrameService.onLandmarksDisplayRod(event[0]['detection']['top_ax'], event[0]['detection']['bot_ax'], event[0]['detection']['center'], event[0]['detection']['big_troch'], size, this.displayedRatio, this.scale, event[0]['side'])
-        this.engineFrameService.displayFemoralOffset(event[0]['detection']['center'], event[0]['detection']['top_ax'], event[0]['detection']['bot_ax'], size, this.displayedRatio, this.scale)
-        
+        this.engineFrameService.onLandmarksDisplayCup(this.detectedLandmarks['center'], this.detectedLandmarks['corner'], this.size, this.displayedRatio, this.scale, event[0]['side'])
+        this.engineFrameService.onLandmarksDisplayRod(this.detectedLandmarks['top_ax'], this.detectedLandmarks['bot_ax'], this.detectedLandmarks['center'], this.detectedLandmarks['big_troch'], this.size, this.displayedRatio, this.scale, event[0]['side'])
+         
       }
     );
+  }
+
+  //onClik of the femoral offset estimation button
+  onFemoralOffsetEstimation() {
+    this.engineFrameService.displayFemoralOffset(this.detectedLandmarks['center'], this.detectedLandmarks['top_ax'], this.detectedLandmarks['bot_ax'], this.size, this.displayedRatio, this.scale)
   }
 }
 
