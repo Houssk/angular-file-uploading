@@ -78,7 +78,7 @@ export class FileUploadComponent implements OnInit {
     this.modalService.open(content).result.then(() => {
       this.scale = this.formCircle.value['diam_mm'] / (this.diam_pix * this.displayedRatio)
       console.log('diam cercle mm affichage '+ (this.diam_pix * this.displayedRatio))
-      console.log('coef agrandissement '+ 1/(this.scale))
+      console.log('coef agrandissement '+ this.scale*this.displayedRatio)
     });
   }
 

@@ -172,7 +172,8 @@ export class EngineFrameService implements OnDestroy {
     let a = center['x'] - corner['x'];
     let b = center['y'] - corner['y'];
     let radius = Math.sqrt(a * a + b * b) * ratio * scale;
-    [new_w, new_h] = this.selectCupSize(side, radius, scale)
+    let radius_retake = radius - 2 ; //to select the size below
+    [new_w, new_h] = this.selectCupSize(side, radius_retake, scale)
     const texture = new THREE.TextureLoader().load(this.pathCup)
     const cup = new THREE.Mesh(
       new THREE.BoxGeometry(new_w, new_h, 1),
@@ -208,7 +209,8 @@ export class EngineFrameService implements OnDestroy {
       console.log(markers);
       console.log(value);
       let femoral_w = this.imageProcessing.getFemoralWidth(value, ratio, scale);
-      [new_w, new_h, pos_x, pos_y, axDiaX] = this.selectRodSize(side, femoral_w, scale);
+      let femoral_w_retake = femoral_w - 2.9 ; //to select the size below
+      [new_w, new_h, pos_x, pos_y, axDiaX] = this.selectRodSize(side, femoral_w_retake, scale);
       //Display the texture with the correct size
       const texture = new THREE.TextureLoader().load(this.pathRod)
       const rod = new THREE.Mesh(
