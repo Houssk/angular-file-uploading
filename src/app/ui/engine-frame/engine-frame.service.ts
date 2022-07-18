@@ -252,6 +252,18 @@ export class EngineFrameService implements OnDestroy {
       rod.translateY(-dist-deltaRot)
 
       this.scene.add(rod);
+
+    let new_world_center_x = center['x'] * ratio - middle_x * ratio
+    let new_world_center_y = -center['y'] * ratio + middle_y * ratio
+    let new_world_stemPos_x = pos_x_before_rotate
+    if (side=='right') {
+      new_world_stemPos_x = new_world_stemPos_x - deltaRot
+    }
+    else if (side=='left') {
+      new_world_stemPos_x = new_world_stemPos_x + deltaRot
+    }
+    
+    this.displayProtOffset(new_world_stemPos_x, new_world_center_x, new_world_center_y, scale)
     })
   }
 
@@ -297,7 +309,7 @@ export class EngineFrameService implements OnDestroy {
       const resultDist = (dist*scale).toPrecision(5).toString() + " mm";
       const val = this.makeTextSprite( resultDist, 
         { fontsize: 44, textColor: {r:255, g:255, b:0, a:1.0}} );
-      val.position.set(centerVector.x, centerVector.y+5, 1)
+      val.position.set(centerVector.x, centerVector.y+2, 1)
       this.scene.add(val);
   }
 
@@ -368,6 +380,42 @@ export class EngineFrameService implements OnDestroy {
       val.position.set(world_firstLTroch_x, world_firstLTroch_y+5, 1)
       this.scene.add(val);
 
+  }
+
+  public displayProtOffset(stem_x, center_x, h, scale){
+
+    const stemVector = new THREE.Vector3(stem_x, h, 0)
+    const cupVector = new THREE.Vector3(center_x, h, 0)
+
+    const stemCenter = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 5, 5),
+      new THREE.MeshBasicMaterial({color: 0xff00ff})
+    );
+    stemCenter.position.set(stemVector.x, stemVector.y, stemVector.z)
+    this.scene.add(stemCenter);
+
+    const cupCenter = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 5, 5),
+      new THREE.MeshBasicMaterial({color: 0xff00ff})
+    );
+    cupCenter.position.set(cupVector.x, cupVector.y, cupVector.z)
+    this.scene.add(cupCenter);
+
+    const points = [stemVector, cupVector];
+    const line = new THREE.Line( 
+      new THREE.BufferGeometry().setFromPoints( points ), 
+      new THREE.LineBasicMaterial( { color: 0xff00ff } )
+      );
+    line.translateZ(1)
+    this.scene.add( line );
+
+    const pOffset = stemVector.distanceTo(cupVector)
+
+    const resulPOffset = (pOffset*scale).toPrecision(4).toString() + " mm";
+      const val = this.makeTextSprite( resulPOffset, 
+        { fontsize: 44, textColor: {r:255, g:0, b:255, a:1.0}} );
+      val.position.set(stemVector.x, stemVector.y-5, 1)
+      this.scene.add(val);
   }
 
 
