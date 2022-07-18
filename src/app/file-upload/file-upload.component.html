@@ -1,3 +1,30 @@
+
+  <ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" 
+            id="modal-basic-title">
+            Renseigner le diamètre de la bille 
+        </h4>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="formCircle" >
+        <input type="text" 
+            id ="diam_mm" 
+            name="diam_mm" 
+            formControlName="diam_mm" 
+            type="number"
+            placeholder="diamètre en mm">
+        <div class="modal-footer">
+          <button type="button" 
+              class="btn btn-success" 
+              (click)="modal.close()">
+              Valider
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+
 <div class="accordion" id="accordionIA">
   <div class="accordion-item">
     <h2 class="accordion-header" id="headingOne">
@@ -14,9 +41,14 @@
                   class="btn btn-success" >
             Upload
           </button>
+          <button [disabled]=!this.fileUploaded
+            class="btn btn-success"  
+            (click)="openScale(content)">
+            Calibration
+          </button> 
         </div>
         <div>
-          <form [formGroup]="form">
+          <form [formGroup]="formHip">
             <div class="row">
               <label class="text-center">
                 <br>
@@ -43,14 +75,27 @@
                 <br>
               </label>
               <div class="col text-center">
-                <button [disabled]="verif() || !this.file" (click)="onDetection()"
-                        class="btn btn-success">
+                <button [disabled]="verif() || !this.fileUploaded" (click)="onDetection()"
+                        class="btn btn-success"> 
                   Automatic Detection
                 </button>
               </div>
             </div>
           </form>
         </div>
+      <div>
+        <br>
+        <div class="col text-center">
+          <button [disabled]="this.detectedLandmarks == undefined" (click)="onFemoralOffsetEstimation()"
+                  class="btn btn-success"> 
+            Femoral offset
+          </button>
+          <button [disabled]="this.detectedLandmarks == undefined || this.formHip.value['nbrHip']==1" (click)="onHipHeightEstimation()"
+                  class="btn btn-success"> 
+            Hip Height
+          </button>
+        </div>
+      </div>
         <!-- Infos about returned by the backend -->
         <div class="container text-center jumbotron"
              *ngIf="shortLink">
