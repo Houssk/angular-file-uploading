@@ -1,5 +1,5 @@
 import {MathUtils, Mesh, Quaternion, Scene, Vector3, Euler} from 'three';
-import {PositionUtil} from 'threejs-position-util';
+import {PositionUtil} from '@masatomakino/threejs-position-util';
 
 
 export class Utils {
