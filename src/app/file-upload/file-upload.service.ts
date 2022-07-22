@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 // @ts-ignore
 import {Observable} from 'rxjs';
 import {environment} from "@environments/environment";
-import { FormGroup } from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -29,16 +29,17 @@ export class FileUploadService {
     // with formData as req
     return this.http.post(`${this.baseApiUrl}/${path}`, formData);
   }
-  detection(form: FormGroup, path: string){
+
+  detection(form: FormGroup, path: string) {
 
     let sideTrad = ['undefined', 'left', 'right']
 
     let infos = JSON.stringify([
-          {
-              "nbrHip": form.value['nbrHip'],
-              "side": sideTrad[form.value['side']]
-          },
-      ]);
+      {
+        "nbrHip": form.value['nbrHip'],
+        "side": sideTrad[form.value['side']]
+      },
+    ]);
 
     const data2send = JSON.parse(infos)
 
@@ -47,18 +48,18 @@ export class FileUploadService {
     
   }
 
-  size(deltaCut: number, xDiaph: number, yDiaph: number, xTroch: number, yTroch: number,angle: number, path : string){
+  size(deltaCut: number, xDiaph: number, yDiaph: number, xTroch: number, yTroch: number, angle: number, path: string) {
 
     let infos = JSON.stringify([
-        {
-          "deltaCut": deltaCut,
-          "xDiaph": xDiaph,
-          "yDiaph": yDiaph,
-          "xTroch": xTroch,
-          "yTroch": yTroch,
-          "angle": angle
-        },
-      ]);
+      {
+        "deltaCut": deltaCut,
+        "xDiaph": xDiaph,
+        "yDiaph": yDiaph,
+        "xTroch": xTroch,
+        "yTroch": yTroch,
+        "angle": angle
+      },
+    ]);
 
     const data2send = JSON.parse(infos)
 
@@ -66,8 +67,8 @@ export class FileUploadService {
     //const headers = new HttpHeaders();
     //headers.set("Accept", "application/json").set('Content-Type', 'application/json')
 
-
     return this.http.post(`${this.baseApiUrl}/${path}`, data2send);
     
+
   }
 }
