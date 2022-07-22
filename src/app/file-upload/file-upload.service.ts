@@ -26,8 +26,11 @@ export class FileUploadService {
     formData.append("image", file, file.name);
 
     // Make http post request over api
+    const headers = new HttpHeaders();
+    headers.set("Accept", "application/json").set('Content-Type', 'application/json').set('Access-Control-Allow-Origin','*');
+
     // with formData as req
-    return this.http.post(`${this.baseApiUrl}/${path}`, formData);
+    return this.http.post(`${this.baseApiUrl}/${path}`, formData, {headers});
   }
 
   detection(form: FormGroup, path: string) {
@@ -44,7 +47,10 @@ export class FileUploadService {
     const data2send = JSON.parse(infos)
 
     // Make http post request over api
-    return this.http.post(`${this.baseApiUrl}/${path}`, data2send);
+    const headers = new HttpHeaders();
+    headers.set("Accept", "application/json").set('Content-Type', 'application/json').set('Access-Control-Allow-Origin','*');
+
+    return this.http.post(`${this.baseApiUrl}/${path}`, data2send, {headers});
     
   }
 
@@ -64,10 +70,10 @@ export class FileUploadService {
     const data2send = JSON.parse(infos)
 
     // Make http post request over api
-    //const headers = new HttpHeaders();
-    //headers.set("Accept", "application/json").set('Content-Type', 'application/json')
+    const headers = new HttpHeaders();
+    headers.set("Accept", "application/json").set('Content-Type', 'application/json').set('Access-Control-Allow-Origin','*');
 
-    return this.http.post(`${this.baseApiUrl}/${path}`, data2send);
+    return this.http.post(`${this.baseApiUrl}/${path}`, data2send, {headers});
     
 
   }
