@@ -27,7 +27,7 @@ export class FileUploadService {
 
     // Make http post request over api
     // with formData as req
-    return this.http.post(`${this.baseApiUrl}/${path}`, formData)
+    return this.http.post(`${this.baseApiUrl}/${path}`, formData);
   }
   detection(form: FormGroup, path: string){
 
@@ -43,10 +43,7 @@ export class FileUploadService {
     const data2send = JSON.parse(infos)
 
     // Make http post request over api
-    const headers = new HttpHeaders();
-    headers.set("Accept", "application/json").set('Content-Type', 'application/json')
-
-    return this.http.post(`${this.baseApiUrl}/${path}`, data2send, { headers });
+    return this.http.post(`${this.baseApiUrl}/${path}`, data2send);
     
   }
 
@@ -66,10 +63,11 @@ export class FileUploadService {
     const data2send = JSON.parse(infos)
 
     // Make http post request over api
-    const headers = new HttpHeaders();
-    headers.set("Accept", "application/json").set('Content-Type', 'application/json')
+    //const headers = new HttpHeaders();
+    //headers.set("Accept", "application/json").set('Content-Type', 'application/json')
 
-    return this.http.post(`${this.baseApiUrl}/${path}`, data2send, { headers });
+
+    return this.http.post(`${this.baseApiUrl}/${path}`, data2send);
     
   }
 }
